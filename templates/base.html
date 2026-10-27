@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}PR Monitorinq{% endblock %}</title>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MediaPulse">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f3f4f6; color: #1f2937; }
+
+  /* NAVBAR */
+  .navbar {
+    background: #1e3a5f; color: white; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; position: sticky; top: 0; z-index: 200;
+  }
+  .navbar .brand { font-size: 18px; font-weight: 700; letter-spacing: .5px; text-decoration: none; color: white; }
+  .navbar .brand span { color: #60a5fa; }
+  .navbar-links { display: flex; align-items: center; }
+  .navbar-links a {
+    color: rgba(255,255,255,.85); text-decoration: none;
+    margin-left: 4px; font-size: 14px; padding: 6px 12px; border-radius: 6px;
+    transition: background .15s;
+  }
+  .navbar-links a:hover, .navbar-links a.active { background: rgba(255,255,255,.15); color: white; }
+  .navbar-links a.logout { color: #fca5a5; }
+
+  /* Hamburger */
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; padding: 6px; border: none; background: none;
+  }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: white; border-radius: 2px; transition: .3s;
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    display: none; background: #1e3a5f;
+    border-top: 1px solid rgba(255,255,255,.1);
+    position: absolute; top: 56px; left: 0; right: 0; z-index: 199;
+  }
+  .mobile-menu.open { display: block; }
+  .mobile-menu a {
+    display: block; color: rgba(255,255,255,.85); text-decoration: none;
+    padding: 14px 24px; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,.08);
+    transition: background .15s;
+  }
+  .mobile-menu a:hover { background: rgba(255,255,255,.1); }
+  .mobile-menu a.logout { color: #fca5a5; }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 24px 20px; }
+
+  .card {
+    background: white; border-radius: 10px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 20px;
+  }
+  .btn {
+    display: inline-block; padding: 8px 18px; border-radius: 6px;
+    font-size: 14px; font-weight: 500; cursor: pointer; border: none;
+    text-decoration: none; transition: opacity .2s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: #1e3a5f; color: white; }
+  .btn-danger  { background: #ef4444; color: white; }
+  .btn-success { background: #10b981; color: white; }
+  .btn-sm { padding: 4px 12px; font-size: 12px; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+  }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  .badge-green  { background: #d1fae5; color: #065f46; }
+
+  .metric-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .metric {
+    background: white; border-radius: 10px; padding: 18px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .metric .val { font-size: 32px; font-weight: 700; }
+  .metric .lbl { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .metric.red .val    { color: #ef4444; }
+  .metric.yellow .val { color: #f59e0b; }
+  .metric.green .val  { color: #10b981; }
+
+  /* RESPONSIVE */
+  @media(max-width: 768px) {
+    .navbar-links { display: none; }
+    .hamburger { display: flex; }
+    .metric-grid { grid-template-columns: repeat(2,1fr); }
+    .metric .val { font-size: 26px; }
+    .container { padding: 16px 14px; }
+    .card { padding: 14px; }
+  }
+</style>
+<style>{% block extra_style %}{% endblock %}</style>
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="navbar">
+  <a href="{% url 'dashboard' %}" class="brand">Media<span>Pulse</span></a>
+  <div class="navbar-links">
+    <a href="{% url 'dashboard' %}" class="nav-pr-scope {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">{{ nav.nav_dashboard_icon }} {{ nav.nav_dashboard_label }}</a>
+    {% if nav.nav_press_show != "0" %}
+    <a href="{% url 'press_release' %}" class="nav-pr-scope {% if request.resolver_match.url_name == 'press_release' %}active{% endif %}">{{ nav.nav_press_icon }} {{ nav.nav_press_label }}</a>
+    {% endif %}
+    {% if nav.nav_posttitles_show != "0" %}
+    <a href="{% url 'post_titles' %}" class="nav-pr-scope {% if request.resolver_match.url_name == 'post_titles' %}active{% endif %}">{{ nav.nav_posttitles_icon }} {{ nav.nav_posttitles_label }}</a>
+    {% endif %}
+    {% if user.membership.role == 'admin' %}
+    <a href="{% url 'keywords' %}" class="nav-pr-scope {% if request.resolver_match.url_name == 'keywords' %}active{% endif %}">{{ nav.nav_keywords_icon }} {{ nav.nav_keywords_label }}</a>
+    <a href="{% url 'keyword_analytics' %}" class="nav-pr-scope {% if request.resolver_match.url_name == 'keyword_analytics' %}active{% endif %}">📊 Statistika</a>
+    {% endif %}
+    <a href="{% url 'logout' %}" class="logout">🚪 Çıxış</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menyu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="{% url 'dashboard' %}" class="nav-pr-scope">{{ nav.nav_dashboard_icon }} {{ nav.nav_dashboard_label }}</a>
+  {% if nav.nav_press_show != "0" %}
+  <a href="{% url 'press_release' %}" class="nav-pr-scope">{{ nav.nav_press_icon }} {{ nav.nav_press_label }}</a>
+  {% endif %}
+  {% if nav.nav_posttitles_show != "0" %}
+  <a href="{% url 'post_titles' %}" class="nav-pr-scope">{{ nav.nav_posttitles_icon }} {{ nav.nav_posttitles_label }}</a>
+  {% endif %}
+  {% if user.membership.role == 'admin' %}
+  <a href="{% url 'keywords' %}" class="nav-pr-scope">{{ nav.nav_keywords_icon }} {{ nav.nav_keywords_label }}</a>
+  <a href="{% url 'keyword_analytics' %}" class="nav-pr-scope">📊 Statistika</a>
+  {% endif %}
+  <a href="{% url 'logout' %}" class="logout">🚪 Çıxış</a>
+</div>
+<script>
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+</script>
+{% endif %}
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

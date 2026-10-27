@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block title %}Açar söz analitikası — MediaPulse{% endblock %}
+{% block extra_style %}
+:root {
+  --ink: #12263f; --ink-2: #5b6b81; --line: #e3e9f2;
+  --brand: #1e3a5f; --brand-2: #2d5986; --accent: #2f6fb3;
+  --neg: #ef4444; --pos: #10b981; --warn: #f59e0b;
+}
+.card {
+  background: white; border-radius: 14px; padding: 22px;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(18,38,63,.04), 0 8px 24px -18px rgba(18,38,63,.18);
+}
+.chart-title { font-size: 14px; font-weight: 700; color: var(--brand); margin-bottom: 12px; }
+.page-header h2 { font-size: 22px; font-weight: 700; color: #1e3a5f; }
+.page-header p  { color: #6b7280; font-size: 14px; margin-top: 4px; }
+.kw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 20px; }
+.kw-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px; }
+.kw-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.kw-name { font-weight: 700; font-size: 15px; color: #1e3a5f; }
+.kw-total { font-size: 22px; font-weight: 800; color: #1e3a5f; }
+.kw-total-lbl { font-size: 11px; color: #6b7280; }
+.sent-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.sent-badge { flex: 1; text-align: center; border-radius: 8px; padding: 6px 4px; font-size: 13px; font-weight: 600; }
+.sent-pos { background: #d1fae5; color: #065f46; }
+.sent-neg { background: #fee2e2; color: #991b1b; }
+.chart-wrap { position: relative; height: 120px; }
+.no-data { text-align: center; color: #9ca3af; font-size: 13px; padding: 30px 0; }
+.filter-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.filter-row select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+.summary-bar { display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+.summary-item { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 20px; flex: 1; min-width: 140px; }
+.summary-item .num { font-size: 24px; font-weight: 800; color: #1e3a5f; }
+.summary-item .lbl { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+/* ── Ümumi qrafiklər / müqayisə / mənbə reytinqi (dashboard-dan köçüb) ── */
+.charts-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin: 20px 0 16px; }
+.charts-grid .card { margin-bottom: 0; }
+.cmp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.cmp-cell { border-radius: 11px; padding: 14px 12px; text-align: center; border: 1px solid transparent; }
+.cmp-cell.c-all { background: #f6f9fc; border-color: #e8eef6; }
+.cmp-cell.c-neg { background: #fef5f5; border-color: #fbe3e3; }
+.cmp-cell.c-pos { background: #f2fcf7; border-color: #d9f3e6; }
+.cmp-cell .cl { font-size: 11px; color: var(--ink-2); margin-bottom: 6px; font-weight: 600; }
+.cmp-cell .cv { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.cmp-cell .cp { font-size: 11px; color: #9ca3af; margin: 4px 0 6px; }
+.delta { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+.delta.up-good, .delta.down-good { background: #d9f3e6; color: #047857; }
+.delta.up-bad, .delta.down-bad   { background: #fee2e2; color: #b91c1c; }
+.delta.flat { background: #f1f5f9; color: #64748b; }
+.pct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.pct-cell { border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; }
+.pct-cell.p-neg { background: #fef5f5; }
+.pct-cell.p-pos { background: #f2fcf7; }
+@media(max-width:768px) {
+  .charts-grid { grid-template-columns: 1fr; }
+  .charts-grid .card { margin-bottom: 12px; }
+  #kwChartTop { min-height: 200px; }
+  .cmp-grid { grid-template-columns: 1fr; }
+}
+.src-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.src-table th { text-align: left; padding: 8px 10px; color: var(--ink-2); font-weight: 600; border-bottom: 2px solid var(--line); }
+.src-table td { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; }
+.src-table tbody tr { transition: background .15s; }
+.src-table tbody tr:hover { background: #f8fafc; }
+.src-table tbody tr.top1 { background: #fffbeb; }
+.src-bar { flex: 1; background: #f1f5f9; border-radius: 99px; height: 8px; min-width: 60px; overflow: hidden; }
+.src-bar i { display: block; height: 100%; border-radius: 99px; transition: width .8s cubic-bezier(.22,.9,.35,1); }
+{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2>📊 Açar söz analitikası</h2>
+    <p>Hər açar söz üçün xəbər statistikası və günlük trend</p>
+  </div>
+  <div class="filter-row">
+    <form method="get" style="display:flex;gap:8px;align-items:center;">
+      <select name="days" onchange="this.form.submit()">
+        <option value="7"  {% if days == 7  %}selected{% endif %}>Son 7 gün</option>
+        <option value="14" {% if days == 14 %}selected{% endif %}>Son 14 gün</option>
+        <option value="30" {% if days == 30 %}selected{% endif %}>Son 30 gün</option>
+        <option value="90" {% if days == 90 %}selected{% endif %}>Son 90 gün</option>
+      </select>
+    </form>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-sm">← Dashboarda qayıt</a>
+  </div>
+</div>
+
+<!-- Qrafiklər -->
+<div class="charts-grid">
+  <div class="card">
+    <div class="chart-title">🎯 Sentiment bölgüsü</div>
+    <canvas id="pieChartTop"></canvas>
+  </div>
+  <div class="card">
+    <div class="chart-title">📅 Günlük xəbər axını</div>
+    <canvas id="barChartTop"></canvas>
+  </div>
+</div>
+<div class="card" style="margin-bottom:16px;">
+  <div class="chart-title">🔑 Açar sözlər üzrə bölgü</div>
+  <canvas id="kwChartTop"></canvas>
+</div>
+
+<!-- Müqayisəli analiz -->
+<div class="card" style="margin-bottom:16px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+    <div class="chart-title" style="margin:0;">📊 Müqayisəli analiz</div>
+    <select onchange="window.location.href=updateParam('cmp',this.value)" style="font-size:12px;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;color:#374151;cursor:pointer;font-family:inherit;">
+      <option value="day"     {% if cmp_period == 'day'     %}selected{% endif %}>Bu gün və Dünən</option>
+      <option value="week"    {% if cmp_period == 'week'    %}selected{% endif %}>Bu həftə və Keçən həftə</option>
+      <option value="month"   {% if cmp_period == 'month'   %}selected{% endif %}>Bu ay və Keçən ay</option>
+      <option value="quarter" {% if cmp_period == 'quarter' %}selected{% endif %}>Bu rüb və Keçən rüb</option>
+    </select>
+  </div>
+  <div class="cmp-grid">
+    <div class="cmp-cell c-all">
+      <div class="cl">📰 Ümumi xəbər</div>
+      <div class="cv" style="color:var(--brand);">{{ comparison.this.total }}</div>
+      <div class="cp">keçən: {{ comparison.last.total }}</div>
+      {% if comparison.total_d.same %}<span class="delta flat">— dəyişməyib</span>
+      {% elif comparison.total_d.up %}<span class="delta up-good">▲ +{{ comparison.total_d.val }}</span>
+      {% else %}<span class="delta down-bad">▼ -{{ comparison.total_d.val }}</span>{% endif %}
+    </div>
+    <div class="cmp-cell c-neg">
+      <div class="cl">🔴 Mənfi xəbər</div>
+      <div class="cv" style="color:var(--neg);">{{ comparison.this.menfi }}</div>
+      <div class="cp">keçən: {{ comparison.last.menfi }}</div>
+      {% if comparison.menfi_d.same %}<span class="delta flat">— dəyişməyib</span>
+      {% elif comparison.menfi_d.up %}<span class="delta up-bad">▲ +{{ comparison.menfi_d.val }}</span>
+      {% else %}<span class="delta down-good">▼ -{{ comparison.menfi_d.val }}</span>{% endif %}
+    </div>
+    <div class="cmp-cell c-pos">
+      <div class="cl">🟢 Müsbət xəbər</div>
+      <div class="cv" style="color:var(--pos);">{{ comparison.this.musbet }}</div>
+      <div class="cp">keçən: {{ comparison.last.musbet }}</div>
+      {% if comparison.musbet_d.same %}<span class="delta flat">— dəyişməyib</span>
+      {% elif comparison.musbet_d.up %}<span class="delta up-good">▲ +{{ comparison.musbet_d.val }}</span>
+      {% else %}<span class="delta down-bad">▼ -{{ comparison.musbet_d.val }}</span>{% endif %}
+    </div>
+  </div>
+  <div class="pct-row">
+    <div class="pct-cell p-neg">
+      <span style="font-size:12px;color:#6b7280;">🔴 Mənfi faizi</span>
+      <div style="text-align:right;">
+        <span style="font-size:16px;font-weight:800;color:var(--neg);">{{ comparison.this.menfi_pct }}%</span>
+        <span style="font-size:11px;color:#9ca3af;margin-left:4px;">keçən: {{ comparison.last.menfi_pct }}%</span>
+        {% if not comparison.menfi_pct_d.same %}{% if comparison.menfi_pct_d.up %}<span style="font-size:11px;font-weight:700;color:var(--neg);margin-left:2px;">▲</span>{% else %}<span style="font-size:11px;font-weight:700;color:var(--pos);margin-left:2px;">▼</span>{% endif %}{% endif %}
+      </div>
+    </div>
+    <div class="pct-cell p-pos">
+      <span style="font-size:12px;color:#6b7280;">🟢 Müsbət faizi</span>
+      <div style="text-align:right;">
+        <span style="font-size:16px;font-weight:800;color:var(--pos);">{{ comparison.this.musbet_pct }}%</span>
+        <span style="font-size:11px;color:#9ca3af;margin-left:4px;">keçən: {{ comparison.last.musbet_pct }}%</span>
+        {% if not comparison.musbet_pct_d.same %}{% if comparison.musbet_pct_d.up %}<span style="font-size:11px;font-weight:700;color:var(--pos);margin-left:2px;">▲</span>{% else %}<span style="font-size:11px;font-weight:700;color:var(--neg);margin-left:2px;">▼</span>{% endif %}{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mənbə reytinqi -->
+{% if source_ratings %}
+<div class="card" style="margin-bottom:16px;">
+  <div class="chart-title">🌐 Mənbə reytinqi <span style="font-size:11px;font-weight:400;color:#9ca3af;">(bütün dövr, ilk 10)</span></div>
+  <div style="overflow-x:auto;">
+    <table class="src-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Mənbə</th>
+          <th style="text-align:center;">Ümumi</th>
+          <th style="text-align:center;color:var(--neg);">🔴 Mənfi</th>
+          <th style="text-align:center;color:var(--pos);">🟢 Müsbət</th>
+          <th>Mənfilik faizi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in source_ratings %}
+        <tr {% if forloop.counter == 1 %}class="top1"{% endif %}>
+          <td style="color:#9ca3af;font-weight:600;">{{ forloop.counter }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px;">
+              {% if s.source|slice:":3" == "TV:" %}
+              <span style="font-size:13px;">📺</span>
+              {% else %}
+              <img src="https://www.google.com/s2/favicons?domain={{ s.source }}&sz=16" width="14" height="14" style="border-radius:2px;" onerror="this.style.display='none'">
+              {% endif %}
+              <span style="font-weight:700;color:var(--brand);">{{ s.source }}</span>
+            </div>
+          </td>
+          <td style="text-align:center;font-weight:700;color:#374151;font-variant-numeric:tabular-nums;">{{ s.total }}</td>
+          <td style="text-align:center;color:var(--neg);font-weight:600;font-variant-numeric:tabular-nums;">{{ s.menfi }}</td>
+          <td style="text-align:center;color:var(--pos);font-weight:600;font-variant-numeric:tabular-nums;">{{ s.musbet }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="src-bar">
+                <i style="width:{{ s.menfi_pct }}%;background:{% if s.menfi_pct >= 60 %}var(--neg){% elif s.menfi_pct >= 30 %}var(--warn){% else %}var(--pos){% endif %};"></i>
+              </div>
+              <span style="font-size:12px;font-weight:700;color:{% if s.menfi_pct >= 60 %}var(--neg){% elif s.menfi_pct >= 30 %}var(--warn){% else %}var(--pos){% endif %};min-width:32px;">{{ s.menfi_pct }}%</span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if stats %}
+<!-- Summary bar -->
+<div class="summary-bar">
+  <div class="summary-item">
+    <div class="num">{{ stats|length }}</div>
+    <div class="lbl">Aktiv açar söz</div>
+  </div>
+  <div class="summary-item">
+    <div class="num" id="totalNews">0</div>
+    <div class="lbl">Ümumi xəbər</div>
+  </div>
+  <div class="summary-item" style="border-color:#d1fae5;">
+    <div class="num" style="color:#065f46;" id="totalPos">0</div>
+    <div class="lbl">Müsbət</div>
+  </div>
+  <div class="summary-item" style="border-color:#fee2e2;">
+    <div class="num" style="color:#991b1b;" id="totalNeg">0</div>
+    <div class="lbl">Mənfi</div>
+  </div>
+</div>
+
+<div class="kw-grid" id="kwGrid"></div>
+
+{% else %}
+<div class="card" style="text-align:center;padding:60px;">
+  <div style="font-size:48px;">🔍</div>
+  <p style="color:#6b7280;margin-top:12px;">Aktiv açar söz tapılmadı. <a href="{% url 'keywords' %}">Açar söz əlavə edin</a></p>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+function updateParam(key, val) {
+  const url = new URL(window.location.href);
+  url.searchParams.set(key, val);
+  return url.toString();
+}
+
+const TOPD = {{ chart_data|safe }};
+const MENFI_C = '#ef4444', MUSBET_C = '#10b981';
+
+new Chart(document.getElementById('pieChartTop'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Mənfi', 'Müsbət'],
+    datasets: [{ data: TOPD.pie, backgroundColor: [MENFI_C, MUSBET_C], borderWidth: 2, borderRadius: 6 }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } }, cutout: '62%' }
+});
+new Chart(document.getElementById('barChartTop'), {
+  type: 'bar',
+  data: {
+    labels: TOPD.daily.labels,
+    datasets: [
+      { label: 'Mənfi',  data: TOPD.daily.menfi,  backgroundColor: MENFI_C,  borderRadius: 4 },
+      { label: 'Müsbət', data: TOPD.daily.musbet, backgroundColor: MUSBET_C, borderRadius: 4 },
+    ]
+  },
+  options: { scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true } },
+             plugins: { legend: { position: 'bottom' } } }
+});
+(function () {
+  const isMobile = window.innerWidth <= 768;
+  const kwCanvas = document.getElementById('kwChartTop');
+  if (isMobile) kwCanvas.height = Math.max(200, TOPD.kw.labels.length * 32);
+  new Chart(kwCanvas, {
+    type: 'bar',
+    data: {
+      labels: TOPD.kw.labels,
+      datasets: [
+        { label: 'Mənfi',  data: TOPD.kw.menfi,  backgroundColor: MENFI_C,  borderRadius: 4 },
+        { label: 'Müsbət', data: TOPD.kw.musbet, backgroundColor: MUSBET_C, borderRadius: 4 },
+      ]
+    },
+    options: {
+      indexAxis: isMobile ? 'y' : 'x',
+      scales: { x: { stacked: true, beginAtZero: true }, y: { stacked: true, beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } },
+      responsive: true,
+      maintainAspectRatio: !isMobile,
+    }
+  });
+})();
+
+const STATS = {{ stats_json|safe }};
+
+// Compute totals
+let totalNews = 0, totalPos = 0, totalNeg = 0;
+STATS.forEach(s => { totalNews += s.total; totalPos += s.pos; totalNeg += s.neg; });
+document.getElementById('totalNews').textContent = totalNews;
+document.getElementById('totalPos').textContent  = totalPos;
+document.getElementById('totalNeg').textContent  = totalNeg;
+
+// Render cards
+const grid = document.getElementById('kwGrid');
+STATS.forEach((s, i) => {
+  const posW = s.total ? Math.round(s.pos / s.total * 100) : 0;
+  const negW = 100 - posW;
+
+  const card = document.createElement('div');
+  card.className = 'kw-card';
+  card.innerHTML = `
+    <div class="kw-card-header">
+      <span class="kw-name">🔑 ${s.keyword}</span>
+      <div style="text-align:right;">
+        <div class="kw-total">${s.total}</div>
+        <div class="kw-total-lbl">xəbər</div>
+      </div>
+    </div>
+    <div class="sent-row">
+      <div class="sent-badge sent-pos">✅ ${s.pos}<br><small>müsbət</small></div>
+      <div class="sent-badge sent-neg">❌ ${s.neg}<br><small>mənfi</small></div>
+    </div>
+    ${s.total > 0 ? `
+    <div style="height:6px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:14px;">
+      <div style="width:${posW}%;background:#10b981;"></div>
+      <div style="width:${negW}%;background:#ef4444;"></div>
+    </div>` : ''}
+    ${s.daily_labels.length > 0 ? `<div class="chart-wrap"><canvas id="chart_${i}"></canvas></div>` : '<div class="no-data">Bu dövrdə xəbər yoxdur</div>'}
+  `;
+  grid.appendChild(card);
+
+  if (s.daily_labels.length > 0) {
+    new Chart(document.getElementById(`chart_${i}`), {
+      type: 'bar',
+      data: {
+        labels: s.daily_labels,
+        datasets: [{
+          data: s.daily_counts,
+          backgroundColor: '#3b82f6',
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 10 }, maxRotation: 45 } },
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

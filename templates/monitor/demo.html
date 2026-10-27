@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canlı Demo — MediaPulse Media Monitorinq</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f3f4f6; color: #1f2937; }
+
+  /* DEMO BANNER */
+  .demo-banner {
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .demo-banner a {
+    background: white;
+    color: #4f46e5;
+    padding: 6px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: transform .15s;
+  }
+  .demo-banner a:hover { transform: scale(1.04); }
+
+  /* NAVBAR */
+  .navbar {
+    background: #1e3a5f; color: white; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; position: sticky; top: 0; z-index: 200;
+  }
+  .navbar .brand { font-size: 18px; font-weight: 700; letter-spacing: .5px; text-decoration: none; color: white; }
+  .navbar .brand span { color: #60a5fa; }
+  .navbar-links { display: flex; align-items: center; gap: 4px; }
+  .navbar-links a {
+    color: rgba(255,255,255,.85); text-decoration: none;
+    font-size: 14px; padding: 6px 12px; border-radius: 6px;
+    transition: background .15s;
+  }
+  .navbar-links a:hover, .navbar-links a.active { background: rgba(255,255,255,.15); color: white; }
+  .demo-badge-nav {
+    background: rgba(124,58,237,.5);
+    border: 1px solid rgba(167,139,250,.5);
+    color: #c4b5fd;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .4px;
+  }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 24px 20px; }
+
+  .card {
+    background: white; border-radius: 10px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 20px;
+  }
+  .btn {
+    display: inline-block; padding: 8px 18px; border-radius: 6px;
+    font-size: 14px; font-weight: 500; cursor: pointer; border: none;
+    text-decoration: none; transition: opacity .2s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: #1e3a5f; color: white; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-red   { background: #fee2e2; color: #991b1b; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 24px; }
+  .metric { background: white; border-radius: 10px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .metric .val { font-size: 32px; font-weight: 700; }
+  .metric .lbl { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .metric.red .val   { color: #ef4444; }
+  .metric.green .val { color: #10b981; }
+
+  .page-header { margin-bottom: 24px; }
+  .page-header h2 { font-size: 22px; font-weight: 700; color: #1e3a5f; }
+  .page-header p  { color: #6b7280; font-size: 14px; margin-top: 2px; }
+
+  .charts-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px; }
+  .charts-grid .card { margin-bottom: 0; }
+  .chart-title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; }
+
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; align-items: flex-end; }
+  .filters select, .filters input {
+    padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 14px; background: white; outline: none;
+  }
+
+  .news-list { display: flex; flex-direction: column; gap: 12px; }
+  .news-card {
+    background: white; border-radius: 8px; padding: 16px 18px;
+    border-left: 4px solid #d1d5db; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .news-card.menfi   { border-left-color: #ef4444; }
+  .news-card.musbet  { border-left-color: #10b981; }
+  .news-card .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .news-card h4 { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px; }
+  .news-card p  { font-size: 13px; color: #4b5563; }
+  .news-card .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .news-card .footer a { font-size: 12px; color: #1e3a5f; font-weight: 600; text-decoration: none; }
+
+  /* CTA */
+  .demo-cta-box {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5986 100%);
+    border-radius: 16px;
+    padding: 40px 36px;
+    text-align: center;
+    color: white;
+    margin-top: 8px;
+  }
+  .demo-cta-box h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .demo-cta-box p  { font-size: 15px; color: rgba(255,255,255,.8); margin-bottom: 28px; line-height: 1.6; }
+  .demo-cta-box a  {
+    background: #3b82f6; color: white; padding: 14px 36px; border-radius: 10px;
+    text-decoration: none; font-size: 16px; font-weight: 700;
+    box-shadow: 0 4px 18px rgba(59,130,246,.4);
+    transition: transform .15s;
+    display: inline-block;
+  }
+  .demo-cta-box a:hover { transform: translateY(-2px); }
+
+  /* BLUR OVERLAY for locked sections */
+  .blur-section { position: relative; }
+  .blur-section .blur-content { filter: blur(4px); pointer-events: none; user-select: none; }
+  .blur-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.5);
+    border-radius: 10px;
+    z-index: 10;
+    gap: 12px;
+  }
+  .blur-overlay span { font-size: 28px; }
+  .blur-overlay p { font-weight: 700; color: #1e3a5f; font-size: 15px; }
+  .blur-overlay a { background: #1e3a5f; color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; }
+
+  @media(max-width: 768px) {
+    .metric-grid { grid-template-columns: repeat(2,1fr); }
+    .metric .val { font-size: 26px; }
+    .container { padding: 16px 14px; }
+    .card { padding: 14px; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .demo-banner { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  🎯 Bu canlı demo rejimidir — nümunə məlumatlar göstərilir
+  <a href="/#demo">Demo istəyin →</a>
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <a href="/" class="brand">Media<span>Pulse</span></a>
+  <div class="navbar-links">
+    <span class="demo-badge-nav">DEMO REJİMİ</span>
+    <a href="#charts" onclick="openCharts()">📈 Qrafiklər</a>
+    <a href="/#demo" style="background:rgba(59,130,246,.25); color:white;">✉️ Demo istə</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="page-header">
+    <h2>📊 Əmək və Əhalinin Sosial Müdafiəsi Nazirliyi</h2>
+    <p>Mediadakı xəbərlərin real vaxt monitorinqi · Demo rejimi</p>
+  </div>
+
+  <!-- METRİKLƏR -->
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="val">112</div>
+      <div class="lbl">📰 Ümumi xəbər</div>
+    </div>
+    <div class="metric red">
+      <div class="val">23</div>
+      <div class="lbl">🔴 Mənfi</div>
+    </div>
+    <div class="metric green">
+      <div class="val">89</div>
+      <div class="lbl">🟢 Müsbət</div>
+    </div>
+  </div>
+
+  <!-- QRAFİKLƏR -->
+  <div id="chartsSection" style="display:none;">
+    <div class="charts-grid">
+      <div class="card">
+        <div class="chart-title">🥧 Sentiment bölgüsü</div>
+        <canvas id="pieChart" height="220"></canvas>
+      </div>
+      <div class="card">
+        <div class="chart-title">📊 Günlük xəbər axını (son 7 gün)</div>
+        <canvas id="barChart" height="220"></canvas>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="chart-title">🔑 Açar söz üzrə bölgü</div>
+      <canvas id="kwChart" height="180"></canvas>
+    </div>
+  </div>
+
+  <!-- XƏBƏRLƏR -->
+  <div class="card">
+    <div class="filters">
+      <select disabled><option>Son 24 saat</option></select>
+      <select disabled><option>Bütün sentimentlər</option></select>
+      <input type="text" placeholder="🔍 Başlıqda axtar..." disabled style="opacity:.6">
+      <button class="btn btn-primary" disabled style="opacity:.6">Filtrə</button>
+    </div>
+
+    <div class="news-list">
+
+      <div class="news-card menfi">
+        <div class="meta">
+          <span class="badge badge-red">🔴 MƏNFİ</span>
+          <span style="font-size:12px; color:#9ca3af;">25.06.2026 09:14</span>
+        </div>
+        <h4>Sosial yardım almaq istəyənlər uzun növbələrdən şikayət edir</h4>
+        <p>Bakı şəhərinin bir sıra DOST mərkəzlərində uzun gözləmə növbələri müşahidə edilib. Vətəndaşlar xidmətin yavaşlığından narazılığını bildiriblər.</p>
+        <div class="footer">
+          <a href="#">🔗 Mənbəyə get →</a>
+          <span style="font-size:11px; color:#9ca3af;">report.az</span>
+        </div>
+      </div>
+
+      <div class="news-card musbet">
+        <div class="meta">
+          <span class="badge badge-green">🟢 MÜSBƏT</span>
+          <span style="font-size:12px; color:#9ca3af;">25.06.2026 08:42</span>
+        </div>
+        <h4>Nazirlik işsizliyə görə müavinətin artırılması ilə bağlı qərar qəbul edib</h4>
+        <p>Əmək və Əhalinin Sosial Müdafiəsi Nazirliyi işsizliyə görə müavinat məbləğinin 15% artırılması barədə qərar qəbul etdiyini açıqlayıb.</p>
+        <div class="footer">
+          <a href="#">🔗 Mənbəyə get →</a>
+          <span style="font-size:11px; color:#9ca3af;">azertag.az</span>
+        </div>
+      </div>
+
+      <div class="news-card musbet">
+        <div class="meta">
+          <span class="badge badge-green">🟢 MÜSBƏT</span>
+          <span style="font-size:12px; color:#9ca3af;">25.06.2026 07:30</span>
+        </div>
+        <h4>DOST mərkəzlərindən 2 milyon vətəndaş istifadə edib</h4>
+        <p>Bu il ərzində DOST mərkəzlərindən istifadə edən vətəndaşların sayı 2 milyonu keçib. Nazir platformanı Azərbaycanın ən uğurlu sosial innovasiyalarından biri adlandırıb.</p>
+        <div class="footer">
+          <a href="#">🔗 Mənbəyə get →</a>
+          <span style="font-size:11px; color:#9ca3af;">1news.az</span>
+        </div>
+      </div>
+
+      <div class="news-card menfi">
+        <div class="meta">
+          <span class="badge badge-red">🔴 MƏNFİ</span>
+          <span style="font-size:12px; color:#9ca3af;">24.06.2026 22:05</span>
+        </div>
+        <h4>Əlilliyi olan şəxslər texniki vəsaitlərin gecikmədən verilməsini tələb edir</h4>
+        <p>Əlilliyi olan bir sıra vətəndaşlar texniki köməkçi vasitələrin vaxtında təmin edilmədiyini bildiriblər. Məsələ parlament müzakirəsinə çıxarılıb.</p>
+        <div class="footer">
+          <a href="#">🔗 Mənbəyə get →</a>
+          <span style="font-size:11px; color:#9ca3af;">milli.az</span>
+        </div>
+      </div>
+
+      <div class="news-card musbet">
+        <div class="meta">
+          <span class="badge badge-green">🟢 MÜSBƏT</span>
+          <span style="font-size:12px; color:#9ca3af;">24.06.2026 19:11</span>
+        </div>
+        <h4>Sosial xidmətlər agentliyi uşaq sığınacaqlarını müasir standartlara uyğunlaşdırıb</h4>
+        <p>Sosial Xidmətlər Agentliyi 12 uşaq evini tam şəkildə təmir edərək müasir standartlara uyğun hala gətirib. Layihəyə 3.2 milyon manat vəsait ayrılıb.</p>
+        <div class="footer">
+          <a href="#">🔗 Mənbəyə get →</a>
+          <span style="font-size:11px; color:#9ca3af;">trend.az</span>
+        </div>
+      </div>
+
+      <div class="news-card musbet">
+        <div class="meta">
+          <span class="badge badge-green">🟢 MÜSBƏT</span>
+          <span style="font-size:12px; color:#9ca3af;">24.06.2026 15:40</span>
+        </div>
+        <h4>Nazirlik işçi heyətinin ixtisasartırma proqramını elan edib</h4>
+        <p>Nazirlik növbəti ilin əvvəlindən bütün sosial işçilər üçün məcburi ixtisasartırma kursları keçirilməsini planlaşdırır.</p>
+        <div class="footer">
+          <a href="#">🔗 Mənbəyə get →</a>
+          <span style="font-size:11px; color:#9ca3af;">apa.az</span>
+        </div>
+      </div>
+
+    </div><!-- /news-list -->
+
+    <!-- LOCKED - blur -->
+    <div class="blur-section" style="margin-top:12px;">
+      <div class="blur-content">
+        <div class="news-list" style="margin-top:0;">
+          <div class="news-card menfi">
+            <div class="meta"><span class="badge badge-red">🔴 MƏNFİ</span><span style="font-size:12px;color:#9ca3af;">24.06.2026 12:00</span></div>
+            <h4>Pensiya hesablamalarında texniki nasazlıq qeydə alınıb</h4>
+            <p>Bir sıra pensiyaçıların müraciəti əsasında pensiya hesablamalarında sistem nasazlığı aşkar edilib.</p>
+            <div class="footer"><a href="#">🔗 Mənbəyə get →</a><span style="font-size:11px;color:#9ca3af;">oxu.az</span></div>
+          </div>
+          <div class="news-card musbet">
+            <div class="meta"><span class="badge badge-green">🟢 MÜSBƏT</span><span style="font-size:12px;color:#9ca3af;">24.06.2026 10:18</span></div>
+            <h4>Yeni DOST mərkəzi Sumqayıtda istifadəyə verilib</h4>
+            <p>Sumqayıt şəhərinin Yeni Günəşli qəsəbəsində müasir DOST mərkəzi fəaliyyətə başlayıb.</p>
+            <div class="footer"><a href="#">🔗 Mənbəyə get →</a><span style="font-size:11px;color:#9ca3af;">day.az</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="blur-overlay">
+        <span>🔒</span>
+        <p>Daha çox xəbərə tam giriş üçün demo istəyin</p>
+        <a href="/#demo">Demo istə →</a>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- CTA -->
+  <div class="demo-cta-box">
+    <h3>Öz qurumunuz üçün qurmağa hazırıq</h3>
+    <p>300+ mənbəni izləyən, hər 15 dəqiqədə yenilənən, AI analiz edən öz media monitorinq panelinizi əldə edin.</p>
+    <a href="/#demo">📩 Demo istəyin — pulsuzdur</a>
+  </div>
+
+</div><!-- /container -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const MENFI  = '#ef4444';
+const MUSBET = '#10b981';
+
+function openCharts() {
+  const sec = document.getElementById('chartsSection');
+  if (sec.style.display === 'none') {
+    sec.style.display = 'block';
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!window._chartsRendered) {
+      window._chartsRendered = true;
+      renderCharts();
+    }
+  } else {
+    sec.style.display = 'none';
+  }
+}
+
+function renderCharts() {
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Mənfi', 'Müsbət'],
+      datasets: [{ data: [23, 89], backgroundColor: [MENFI, MUSBET], borderWidth: 2 }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } }, cutout: '55%' }
+  });
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: ['19 İyn', '20 İyn', '21 İyn', '22 İyn', '23 İyn', '24 İyn', '25 İyn'],
+      datasets: [
+        { label: 'Mənfi',  data: [4, 2, 5, 3, 4, 3, 2], backgroundColor: MENFI },
+        { label: 'Müsbət', data: [10,14,12,15,11,13,14], backgroundColor: MUSBET },
+      ]
+    },
+    options: {
+      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+
+  new Chart(document.getElementById('kwChart'), {
+    type: 'bar',
+    data: {
+      labels: ['ƏƏSMN', 'DOST Mərkəzi', 'Sosial Xidmətlər', 'Əlillik', 'Pensiya', 'İşsizlik müavinatı'],
+      datasets: [
+        { label: 'Mənfi',  data: [8, 3, 4, 5, 2, 1], backgroundColor: MENFI },
+        { label: 'Müsbət', data: [32,24,18,6, 5, 4],  backgroundColor: MUSBET },
+      ]
+    },
+    options: {
+      scales: { x: { stacked: true, beginAtZero: true }, y: { stacked: true, beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+}
+</script>
+</body>
+</html>

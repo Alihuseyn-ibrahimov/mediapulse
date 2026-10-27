@@ -1,0 +1,49 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f2447"/>
+      <stop offset="1" stop-color="#1e3a5f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1060" cy="110" r="240" fill="#3b82f6" opacity="0.08"/>
+  <circle cx="1160" cy="540" r="170" fill="#60a5fa" opacity="0.06"/>
+
+  <!-- badge -->
+  <rect x="80" y="86" width="250" height="46" rx="23" fill="#3b82f6" opacity="0.20"/>
+  <text x="106" y="117" font-family="'DejaVu Sans', sans-serif" font-size="20" font-weight="700" fill="#93c5fd">AZ · Azərbaycan üçün</text>
+
+  <!-- logo -->
+  <text x="78" y="250" font-family="'DejaVu Sans', sans-serif" font-size="98" font-weight="800" fill="#ffffff">Media<tspan fill="#3b82f6">Pulse</tspan></text>
+
+  <!-- tagline -->
+  <text x="80" y="318" font-family="'DejaVu Sans', sans-serif" font-size="40" font-weight="700" fill="#e2e8f0">Media Monitorinq Platforması</text>
+  <text x="80" y="368" font-family="'DejaVu Sans', sans-serif" font-size="25" fill="#94a3b8">Xəbərlərinizi real vaxtda izləyin — AI sentiment analizi</text>
+
+  <!-- feature chips -->
+  <g font-family="'DejaVu Sans', sans-serif" font-size="22" font-weight="600" fill="#e2e8f0">
+    <rect x="80"  y="430" width="180" height="52" rx="26" fill="#ffffff" opacity="0.10"/>
+    <text x="108" y="464" fill="#e2e8f0">300+ mənbə</text>
+    <rect x="280" y="430" width="185" height="52" rx="26" fill="#ffffff" opacity="0.10"/>
+    <text x="308" y="464" fill="#e2e8f0">AI sentiment</text>
+    <rect x="485" y="430" width="230" height="52" rx="26" fill="#ffffff" opacity="0.10"/>
+    <text x="513" y="464" fill="#e2e8f0">Telegram bildiriş</text>
+  </g>
+
+  <!-- url -->
+  <text x="80" y="562" font-family="'DejaVu Sans', sans-serif" font-size="30" font-weight="700" fill="#3b82f6">mediapulse.az</text>
+
+  <!-- right visual: mini dashboard -->
+  <g transform="translate(840, 178)">
+    <rect x="0" y="0" width="290" height="274" rx="22" fill="#ffffff" opacity="0.06"/>
+    <circle cx="52"  cy="56" r="15" fill="#10b981"/>
+    <circle cx="100" cy="56" r="15" fill="#ef4444"/>
+    <circle cx="148" cy="56" r="15" fill="#10b981"/>
+    <rect x="42"  y="176" width="34" height="58"  rx="6" fill="#3b82f6"/>
+    <rect x="92"  y="126" width="34" height="108" rx="6" fill="#3b82f6"/>
+    <rect x="142" y="92"  width="34" height="142" rx="6" fill="#60a5fa"/>
+    <rect x="192" y="150" width="34" height="84"  rx="6" fill="#3b82f6"/>
+  </g>
+</svg>

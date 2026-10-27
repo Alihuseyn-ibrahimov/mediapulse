@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Landing Admin{% endblock %}
+{% block extra_style %}
+.la-page { max-width: 860px; }
+.la-section { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
+.la-section-header { background: #1e3a5f; color: white; padding: 14px 20px; font-size: 15px; font-weight: 700; }
+.la-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f3f4f6; }
+.la-row:last-child { border-bottom: none; }
+.la-label { min-width: 210px; font-size: 13px; color: #6b7280; padding-top: 9px; flex-shrink: 0; }
+.la-input { flex: 1; display: flex; gap: 8px; align-items: flex-start; }
+.la-input input[type=text] {
+  flex: 1; padding: 8px 12px; border: 1px solid #d1d5db;
+  border-radius: 6px; font-size: 14px; outline: none;
+}
+.la-input textarea {
+  flex: 1; padding: 8px 12px; border: 1px solid #d1d5db;
+  border-radius: 6px; font-size: 14px; font-family: inherit;
+  resize: vertical; min-height: 72px; outline: none;
+}
+.la-input input[type=text]:focus,
+.la-input textarea:focus { border-color: #1e3a5f; box-shadow: 0 0 0 2px rgba(30,58,95,.1); }
+.la-save-btn {
+  background: #1e3a5f; color: white; border: none; padding: 8px 16px;
+  border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+.la-save-btn:hover { background: #2d5a9e; }
+.la-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.la-preview-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #3b82f6; color: white; padding: 9px 20px;
+  border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600;
+}
+.la-preview-link:hover { background: #2563eb; }
+{% endblock %}
+{% block content %}
+<div class="la-page">
+  <div class="la-top-bar">
+    <div class="page-header" style="margin:0;">
+      <h2>🖊️ Landing Səhifə Admin</h2>
+      <p>mediapulse.az məzmununu buradan idarə edin. Dəyişikliklər dərhal saytda əks olunur.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <!-- Dil tabları -->
+      <div style="display:flex;gap:4px;background:#f3f4f6;padding:4px;border-radius:8px;">
+        {% for lk, lv in lang_labels.items %}
+        <a href="?lang={{ lk }}" style="padding:6px 14px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;
+          {% if admin_lang == lk %}background:white;color:#1e3a5f;box-shadow:0 1px 4px rgba(0,0,0,.1);{% else %}color:#6b7280;{% endif %}">
+          {{ lv }}
+        </a>
+        {% endfor %}
+      </div>
+      <a href="{% url 'grammar_check' %}" class="la-preview-link" style="background:#10b981;">✏️ Qrammatik yoxlama</a>
+      <a href="/" target="_blank" class="la-preview-link">🔍 Sayta bax →</a>
+      <a href="/admin/" target="_blank" class="la-preview-link" style="background:#6366f1;">⚙️ Django Admin →</a>
+      <form method="post" style="display:contents;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="logout">
+        <button type="submit" class="la-preview-link" style="background:#ef4444;border:none;cursor:pointer;">🚪 Çıxış</button>
+      </form>
+    </div>
+  </div>
+
+  {% for section_name, fields in sections %}
+  <div class="la-section">
+    <div class="la-section-header">{{ section_name }}</div>
+    {% for f in fields %}
+    <div class="la-row">
+      <div class="la-label">{{ f.label }}</div>
+      <div class="la-input">
+        <form method="post" style="display:contents;">
+          {% csrf_token %}
+          <input type="hidden" name="key" value="{{ f.key }}">
+          <input type="hidden" name="lang" value="{{ f.lang }}">
+          {% if f.textarea %}
+          <textarea name="value">{{ f.value }}</textarea>
+          {% else %}
+          <input type="text" name="value" value="{{ f.value }}">
+          {% endif %}
+          <button type="submit" class="la-save-btn">Saxla</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

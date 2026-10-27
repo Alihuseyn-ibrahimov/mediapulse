@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default:'az' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediaPulse — Azərbaycanda Media Monitorinq Platforması</title>
+  <meta name="description" content="MediaPulse — Azərbaycanın aparıcı media monitorinq platforması. Xəbərləri izləyin, sentiment analizi aparın, press-reliz hazırlayın.">
+  <meta name="keywords" content="media monitorinq, PR, press-reliz, Azerbaijan, xəbər izləmə, sentiment analizi">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#1e3a5f">
+  <link rel="canonical" href="https://mediapulse.az/">
+
+  <!-- Open Graph — Telegram/WhatsApp/Facebook link önizləməsi -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MediaPulse">
+  <meta property="og:title" content="MediaPulse — Azərbaycanda Media Monitorinq Platforması">
+  <meta property="og:description" content="Qurumunuz haqqında mediada nə yazıldığını real vaxtda izləyin. AI sentiment analizi, Telegram bildirişi, 300+ mənbə.">
+  <meta property="og:url" content="https://mediapulse.az/">
+  <meta property="og:image" content="https://mediapulse.az/static/og-banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="az_AZ">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MediaPulse — Media Monitorinq Platforması">
+  <meta name="twitter:description" content="Qurumunuz haqqında mediada nə yazıldığını real vaxtda izləyin. AI sentiment analizi, Telegram bildirişi.">
+  <meta name="twitter:image" content="https://mediapulse.az/static/og-banner.png">
+
+  <!-- Dil versiyaları (hreflang) -->
+  <link rel="alternate" hreflang="az" href="https://mediapulse.az/?lang=az">
+  <link rel="alternate" hreflang="ru" href="https://mediapulse.az/?lang=ru">
+  <link rel="alternate" hreflang="en" href="https://mediapulse.az/?lang=en">
+  <link rel="alternate" hreflang="es" href="https://mediapulse.az/?lang=es">
+  <link rel="alternate" hreflang="tr" href="https://mediapulse.az/?lang=tr">
+  <link rel="alternate" hreflang="x-default" href="https://mediapulse.az/">
+
+  <!-- Strukturlaşdırılmış data (Google zəngin nəticələr) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MediaPulse",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "Azərbaycan üçün media monitorinq platforması — real vaxtda xəbər izləmə, AI sentiment analizi, press-reliz hazırlama.",
+    "url": "https://mediapulse.az/",
+    "inLanguage": ["az", "ru", "en", "es", "tr"],
+    "publisher": {
+      "@type": "Organization",
+      "name": "MediaPulse",
+      "url": "https://mediapulse.az/",
+      "logo": "https://mediapulse.az/icon-512.png"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0f2447;
+      --blue: #1e3a5f;
+      --accent: #3b82f6;
+      --accent2: #6366f1;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --surface: #f8fafc;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226,232,240,0.7);
+      padding: 0 48px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-link:hover { color: var(--navy); }
+    .nav-link.active { color: var(--navy); }
+    .nav-btn {
+      background: var(--navy);
+      color: white;
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .2s, transform .15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn:hover { background: #1a3a6e; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      background: var(--navy);
+      color: white;
+      padding: 110px 48px 120px;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(59,130,246,0.35) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(99,102,241,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-dots {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+    .hero-spotlight {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(96,165,250,.22), transparent 70%);
+      transition: background .2s ease-out;
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 32px;
+      align-items: center;
+      text-align: left;
+    }
+    .hero-inner { max-width: 600px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59,130,246,0.18);
+      border: 1px solid rgba(59,130,246,0.4);
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      letter-spacing: .3px;
+      color: #93c5fd;
+    }
+    .hero h1 {
+      font-size: clamp(34px, 4.6vw, 56px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 22px;
+      letter-spacing: -1.5px;
+    }
+    .hero h1 span {
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: rgba(255,255,255,.7);
+      max-width: 560px;
+      margin: 0 0 44px;
+      line-height: 1.75;
+      font-weight: 400;
+    }
+    .hero-btns { display: flex; gap: 14px; justify-content: flex-start; flex-wrap: wrap; }
+
+    /* ── HERO PULSE VISUAL ── */
+    .hero-visual { position: relative; display: flex; align-items: center; justify-content: center; }
+    .pulse-viz { width: 100%; max-width: 400px; aspect-ratio: 1 / 1; overflow: visible; }
+    .pulse-ring { fill: none; stroke: rgba(255,255,255,.14); stroke-width: 1; }
+    .pulse-sweep-wrap { transform-origin: 230px 230px; animation: sweepRot 7s linear infinite; }
+    @keyframes sweepRot { to { transform: rotate(360deg); } }
+    .pulse-node circle { transform-box: fill-box; transform-origin: center; animation: nodePulse 2.6s ease-in-out infinite; }
+    .pulse-node:nth-of-type(1) circle { animation-delay: 0s; }
+    .pulse-node:nth-of-type(2) circle { animation-delay: .4s; }
+    .pulse-node:nth-of-type(3) circle { animation-delay: .8s; }
+    .pulse-node:nth-of-type(4) circle { animation-delay: 1.2s; }
+    .pulse-node:nth-of-type(5) circle { animation-delay: 1.6s; }
+    @keyframes nodePulse { 0%,100% { opacity: .6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.35); } }
+    .pulse-line { stroke: rgba(147,197,253,.32); stroke-width: 1; stroke-dasharray: 3 4; }
+    .pulse-hub-glow { filter: drop-shadow(0 0 16px rgba(96,165,250,.75)); animation: hubGlow 2.6s ease-in-out infinite; }
+    @keyframes hubGlow { 0%,100% { filter: drop-shadow(0 0 10px rgba(96,165,246,.5)); } 50% { filter: drop-shadow(0 0 22px rgba(96,165,250,.9)); } }
+    .pulse-wave-line { fill: none; stroke: #93c5fd; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 360; stroke-dashoffset: 360; animation: waveDraw 3.4s ease-in-out infinite; }
+    @keyframes waveDraw { 0% { stroke-dashoffset: 360; } 45%, 55% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -360; } }
+    .pulse-icon { font-size: 13px; }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse-sweep-wrap, .pulse-node circle, .pulse-hub-glow, .pulse-wave-line { animation: none; }
+    }
+    @media(max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; text-align: center; }
+      .hero-inner { max-width: 620px; margin: 0 auto; }
+      .hero p { margin: 0 auto 44px; }
+      .hero-btns { justify-content: center; }
+      .hero-visual { order: -1; margin-bottom: 8px; }
+      .pulse-viz { max-width: 260px; }
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      padding: 15px 34px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(59,130,246,.4);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,.5); }
+    .btn-ghost {
+      background: rgba(255,255,255,.08);
+      color: white;
+      padding: 15px 34px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,.2);
+      transition: background .2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.15); }
+
+    /* hero wave */
+    .hero-wave {
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 60px;
+      background: var(--surface);
+      clip-path: ellipse(55% 100% at 50% 100%);
+    }
+
+    /* ── STATS ── */
+    .stats {
+      background: white;
+      padding: 64px 48px;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      text-align: center;
+      padding: 0 48px;
+      position: relative;
+    }
+    .stat + .stat::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      height: 40px;
+      width: 1px;
+      background: var(--border);
+    }
+    .stat-num {
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    .stat-num .suffix { font-size: 28px; }
+    .stat-lbl { font-size: 13px; color: var(--muted); margin-top: 8px; font-weight: 500; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 96px 48px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .section-label {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 64px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 20px;
+      padding: 36px 32px;
+      border: 1px solid var(--border);
+      transition: box-shadow .25s, transform .1s ease-out;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s;
+    }
+    .feature-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,.09); transform: translateY(-4px); }
+    .feature-card:hover::after { transform: scaleX(1); }
+    .feature-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin-bottom: 22px;
+    }
+    .feature-card:nth-child(1) .feature-icon { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+    .feature-card:nth-child(2) .feature-icon { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
+    .feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg,#dcfce7,#bbf7d0); }
+    .feature-card:nth-child(4) .feature-icon { background: linear-gradient(135deg,#fef9c3,#fef08a); }
+    .feature-card:nth-child(5) .feature-icon { background: linear-gradient(135deg,#fee2e2,#fecaca); }
+    .feature-card:nth-child(6) .feature-icon { background: linear-gradient(135deg,#cffafe,#a5f3fc); }
+    .feature-card h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.75; }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      background: linear-gradient(180deg, #f1f5f9 0%, white 100%);
+      padding: 96px 48px;
+    }
+    .how-inner { max-width: 760px; margin: 0 auto; }
+    .steps { display: flex; flex-direction: column; gap: 0; margin-top: 56px; position: relative; }
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 21px; top: 44px; bottom: 44px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 100%);
+      opacity: .25;
+    }
+    .step {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 32px 28px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      border: 1px solid var(--border);
+      position: relative;
+      transition: box-shadow .2s;
+      margin-bottom: 16px;
+    }
+    .step:hover { box-shadow: 0 6px 24px rgba(0,0,0,.07); }
+    .step-num {
+      width: 44px; height: 44px; min-width: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+    .step h4 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ── SENTIMENT ── */
+    .sentiments {
+      padding: 96px 48px;
+      max-width: 920px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .sent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .sent-card {
+      border-radius: 20px;
+      padding: 40px 28px;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .sent-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,.08); }
+    .sent-card.menfi  { background: linear-gradient(135deg,#fff1f2,#ffe4e6); border: 1.5px solid #fca5a5; }
+    .sent-card.musbet { background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1.5px solid #86efac; }
+    .sent-emoji { font-size: 44px; margin-bottom: 16px; }
+    .sent-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .sent-card.menfi h3  { color: #dc2626; }
+    .sent-card.musbet h3 { color: #16a34a; }
+    .sent-card p { font-size: 14px; color: #475569; line-height: 1.7; }
+
+    /* ── CTA ── */
+    .cta {
+      background: var(--navy);
+      color: white;
+      text-align: center;
+      padding: 100px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(59,130,246,.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+    .cta h2 {
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 900;
+      margin-bottom: 18px;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .cta p { font-size: 17px; color: rgba(255,255,255,.7); margin-bottom: 44px; line-height: 1.7; }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: var(--navy);
+      padding: 16px 40px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 800;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #060f1e;
+      color: #64748b;
+      padding: 40px 48px;
+    }
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo { font-size: 18px; font-weight: 800; color: white; text-decoration: none; }
+    .footer-logo span { color: var(--accent); }
+    .footer-copy { font-size: 13px; }
+    .footer-copy strong { color: #94a3b8; }
+
+    /* ── PRİCİNG ── */
+    .pricing {
+      background: var(--surface);
+      padding: 96px 48px;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+    .plan-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 32px;
+      position: relative;
+      transition: box-shadow .25s, transform .25s;
+    }
+    .plan-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,.1); transform: translateY(-4px); }
+    .plan-card.popular {
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(59,130,246,.18);
+    }
+    .popular-badge {
+      position: absolute;
+      top: -14px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+      letter-spacing: .4px;
+      white-space: nowrap;
+    }
+    .plan-name { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .plan-price { font-size: 48px; font-weight: 900; color: var(--navy); letter-spacing: -2px; line-height: 1; }
+    .plan-price .currency { font-size: 22px; font-weight: 700; vertical-align: super; margin-right: 2px; }
+    .plan-price .period { font-size: 15px; font-weight: 500; color: var(--muted); }
+    .plan-desc { font-size: 14px; color: var(--muted); margin: 14px 0 28px; line-height: 1.6; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+    .plan-features li { font-size: 14px; color: #374151; display: flex; align-items: flex-start; gap: 10px; }
+    .plan-features li::before { content: '✓'; color: #10b981; font-weight: 700; font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .plan-features li.no::before { content: '✗'; color: #d1d5db; }
+    .plan-features li.no { color: var(--muted); }
+    .plan-btn {
+      display: block; width: 100%; text-align: center;
+      padding: 14px; border-radius: 10px;
+      font-size: 15px; font-weight: 700;
+      text-decoration: none; transition: opacity .2s, transform .15s;
+      border: none; cursor: pointer;
+    }
+    .plan-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .plan-btn.outline { background: white; border: 2px solid var(--navy); color: var(--navy); }
+    .plan-btn.solid   { background: var(--accent); color: white; box-shadow: 0 4px 16px rgba(59,130,246,.35); }
+    .plan-btn.dark    { background: var(--navy); color: white; }
+    @media(max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 420px; } }
+    @media(max-width: 768px) { .pricing { padding: 64px 16px; } }
+
+    /* ── DEMO FORM ── */
+    .demo-section {
+      background: linear-gradient(180deg, white 0%, var(--surface) 100%);
+      padding: 96px 48px;
+    }
+    .demo-inner {
+      max-width: 620px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 56px 48px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.07);
+    }
+    .demo-inner .section-label { text-align: left; margin-bottom: 10px; }
+    .demo-inner .section-title { text-align: left; margin-bottom: 8px; font-size: 28px; }
+    .demo-inner .section-sub   { text-align: left; margin-bottom: 36px; font-size: 15px; }
+    .demo-form { display: flex; flex-direction: column; gap: 16px; }
+    .demo-form input,
+    .demo-form textarea {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .2s;
+      outline: none;
+    }
+    .demo-form input:focus,
+    .demo-form textarea:focus { border-color: var(--accent); background: white; }
+    .demo-form textarea { resize: vertical; min-height: 80px; }
+    .demo-submit {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 15px 32px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s, transform .15s;
+      box-shadow: 0 4px 18px rgba(59,130,246,.35);
+    }
+    .demo-submit:hover { background: #2563eb; transform: translateY(-1px); }
+    .demo-submit:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+    .demo-success {
+      display: none;
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-radius: 12px;
+      padding: 22px 28px;
+      color: #15803d;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .demo-error {
+      display: none;
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: -4px;
+    }
+
+    /* ── CANLI NÜMUNƏ LENTİ ── */
+    .livesample {
+      padding: 88px 0 96px;
+      background: linear-gradient(180deg, white 0%, #f1f5f9 100%);
+    }
+    .livesample .section-label,
+    .livesample .section-title,
+    .livesample .section-sub { padding: 0 48px; }
+    .marquee-wrap {
+      overflow: hidden;
+      margin-top: 48px;
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+      mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 16px;
+      width: max-content;
+      animation: marqueeScroll 32s linear infinite;
+    }
+    .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+    @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ls-card {
+      flex: 0 0 auto;
+      width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.05);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .ls-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+    .ls-badge { flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .ls-card.pos .ls-badge { background: #dcfce7; color: #16a34a; }
+    .ls-card.neg .ls-badge { background: #fee2e2; color: #dc2626; }
+    .ls-body { min-width: 0; }
+    .ls-tag { display: block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+    .ls-card.pos .ls-tag { color: #16a34a; }
+    .ls-card.neg .ls-tag { color: #dc2626; }
+    .ls-card p { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.45; white-space: normal; }
+    @media(max-width: 768px) {
+      .livesample { padding: 64px 0 72px; }
+      .livesample .section-label, .livesample .section-title, .livesample .section-sub { padding: 0 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+    /* ── FAQ ── */
+    .faq { padding: 96px 48px; max-width: 760px; margin: 0 auto; }
+    .faq-list { margin-top: 48px; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { border: 1px solid var(--border); border-radius: 14px; background: white; overflow: hidden; transition: border-color .2s; }
+    .faq-item.open { border-color: #bfdbfe; }
+    .faq-q {
+      width: 100%; text-align: left; background: none; border: none;
+      padding: 20px 24px; font-size: 15px; font-weight: 700; color: var(--navy);
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; font-family: inherit;
+    }
+    .faq-icon {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      background: #eff6ff; color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; line-height: 1;
+      transition: transform .25s, background .2s, color .2s;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); color: white; }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .faq-a-inner { padding: 0 24px 20px; font-size: 14px; color: var(--muted); line-height: 1.7; }
+    @media(max-width: 768px) { .faq { padding: 64px 20px; } }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-link { display: none; }
+      .hero { padding: 72px 24px 90px; }
+      .stats { padding: 48px 24px; gap: 32px; }
+      .stat + .stat::before { display: none; }
+      .stat { padding: 0 24px; }
+      .features { padding: 64px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .how { padding: 64px 24px; }
+      .sentiments { padding: 64px 24px; }
+      .sent-grid { grid-template-columns: 1fr; }
+      .demo-section { padding: 64px 16px; }
+      .demo-inner { padding: 36px 24px; }
+      .cta { padding: 72px 24px; }
+      footer { padding: 32px 24px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Media<span>Pulse</span></a>
+  <div class="nav-right">
+    <a href="#features" class="nav-link">{{ lc.nav_features }}</a>
+    <a href="#how" class="nav-link">{{ lc.nav_how }}</a>
+    <a href="#faq" class="nav-link">{{ lc.faq_label }}</a>
+    <a href="#demo" class="nav-link" style="font-weight:600;color:var(--accent)">{{ lc.nav_demo }}</a>
+    <div style="position:relative;" id="ld">
+      <button onclick="var m=document.getElementById('ldm');m.style.display=m.style.display==='block'?'none':'block'"
+        style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid #cbd5e1;border-radius:6px;background:white;color:#1e3a5f;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+        {% if lang == 'az' %}AZ{% elif lang == 'ru' %}RU{% elif lang == 'en' %}EN{% elif lang == 'es' %}ES{% elif lang == 'tr' %}TR{% endif %}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="ldm" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:white;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);overflow:hidden;min-width:120px;z-index:999;">
+        <a href="?lang=az" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#1e3a5f;text-decoration:none;{% if lang == 'az' %}background:#f0f7ff;{% endif %}"><img src="https://flagcdn.com/20x15/az.png" width="20" height="15" style="border-radius:2px;flex-shrink:0;"> AZ</a>
+        <a href="?lang=ru" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#1e3a5f;text-decoration:none;{% if lang == 'ru' %}background:#f0f7ff;{% endif %}"><img src="https://flagcdn.com/20x15/ru.png" width="20" height="15" style="border-radius:2px;flex-shrink:0;"> RU</a>
+        <a href="?lang=en" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#1e3a5f;text-decoration:none;{% if lang == 'en' %}background:#f0f7ff;{% endif %}"><img src="https://flagcdn.com/20x15/gb.png" width="20" height="15" style="border-radius:2px;flex-shrink:0;"> EN</a>
+        <a href="?lang=es" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#1e3a5f;text-decoration:none;{% if lang == 'es' %}background:#f0f7ff;{% endif %}"><img src="https://flagcdn.com/20x15/es.png" width="20" height="15" style="border-radius:2px;flex-shrink:0;"> ES</a>
+        <a href="?lang=tr" style="display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#1e3a5f;text-decoration:none;{% if lang == 'tr' %}background:#f0f7ff;{% endif %}"><img src="https://flagcdn.com/20x15/tr.png" width="20" height="15" style="border-radius:2px;flex-shrink:0;"> TR</a>
+      </div>
+    </div>
+    <script>document.addEventListener('click',function(e){if(!document.getElementById('ld').contains(e.target))document.getElementById('ldm').style.display='none';});</script>
+    <a href="{% url 'login' %}" class="nav-btn">{{ lc.nav_login }} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <div class="hero-dots"></div>
+  <div class="hero-spotlight" id="heroSpotlight"></div>
+  <div class="hero-grid">
+    <div class="hero-inner">
+      <div class="hero-badge">{{ lc.hero_badge }}</div>
+      <h1>{{ lc.hero_title }}<br><span>{{ lc.hero_title_hl }}</span></h1>
+      <p>{{ lc.hero_desc }}</p>
+      <div class="hero-btns">
+        <a href="{% url 'login' %}" class="btn-primary">{{ lc.hero_btn_login }}</a>
+        <a href="{% url 'demo' %}" class="btn-ghost">{{ lc.hero_btn_demo }}</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg class="pulse-viz" viewBox="0 0 460 460">
+        <circle class="pulse-ring" cx="230" cy="230" r="200"/>
+        <circle class="pulse-ring" cx="230" cy="230" r="145"/>
+        <circle class="pulse-ring" cx="230" cy="230" r="90"/>
+
+        <g class="pulse-sweep-wrap">
+          <path d="M230 230 L230 30 A200 200 0 0 1 372 88 Z" fill="url(#sweepGrad)"/>
+        </g>
+        <defs>
+          <linearGradient id="sweepGrad" x1="230" y1="30" x2="372" y2="88" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#60a5fa" stop-opacity=".38"/>
+            <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- siqnal xətləri -->
+        <line class="pulse-line" x1="230" y1="230" x2="230" y2="45"/>
+        <line class="pulse-line" x1="230" y1="230" x2="380" y2="140"/>
+        <line class="pulse-line" x1="230" y1="230" x2="355" y2="345"/>
+        <line class="pulse-line" x1="230" y1="230" x2="105" y2="345"/>
+        <line class="pulse-line" x1="230" y1="230" x2="80" y2="140"/>
+
+        <!-- mənbə node-ları -->
+        <g class="pulse-node"><circle cx="230" cy="45"  r="6" fill="#93c5fd"/><text class="pulse-icon" x="230" y="26" text-anchor="middle" fill="#fff">📰</text></g>
+        <g class="pulse-node"><circle cx="380" cy="140" r="6" fill="#a78bfa"/><text class="pulse-icon" x="404" y="145" text-anchor="middle" fill="#fff">✈️</text></g>
+        <g class="pulse-node"><circle cx="355" cy="345" r="6" fill="#93c5fd"/><text class="pulse-icon" x="378" y="368" text-anchor="middle" fill="#fff">📘</text></g>
+        <g class="pulse-node"><circle cx="105" cy="345" r="6" fill="#a78bfa"/><text class="pulse-icon" x="82"  y="368" text-anchor="middle" fill="#fff">▶️</text></g>
+        <g class="pulse-node"><circle cx="80"  cy="140" r="6" fill="#93c5fd"/><text class="pulse-icon" x="56"  y="145" text-anchor="middle" fill="#fff">📸</text></g>
+
+        <!-- mərkəzi hub -->
+        <circle class="pulse-hub-glow" cx="230" cy="230" r="16" fill="#3b82f6"/>
+        <circle cx="230" cy="230" r="7" fill="#dbeafe"/>
+
+        <!-- puls dalğası -->
+        <path class="pulse-wave-line" d="M150 400 L188 400 L200 375 L214 420 L228 385 L240 400 L310 400"/>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-wave"></div>
+</section>
+
+<!-- STATS -->
+<div class="stats reveal">
+  <div class="stat">
+    <div class="stat-num" data-target="{{ lc.stat1_num }}">{{ lc.stat1_num }}</div>
+    <div class="stat-lbl">{{ lc.stat1_lbl }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" data-target="{{ lc.stat2_num }}">{{ lc.stat2_num }}</div>
+    <div class="stat-lbl">{{ lc.stat2_lbl }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" data-target="{{ lc.stat3_num }}">{{ lc.stat3_num }}</div>
+    <div class="stat-lbl">{{ lc.stat3_lbl }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" data-target="{{ lc.stat4_num }}">{{ lc.stat4_num }}</div>
+    <div class="stat-lbl">{{ lc.stat4_lbl }}</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="reveal">
+    <p class="section-label">{{ lc.feat_label }}</p>
+    <h2 class="section-title">{{ lc.feat_title }}</h2>
+    <p class="section-sub">{{ lc.feat_sub }}</p>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <div class="feature-icon">{{ lc.feat1_icon }}</div>
+      <h3>{{ lc.feat1_title }}</h3>
+      <p>{{ lc.feat1_desc }}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">{{ lc.feat2_icon }}</div>
+      <h3>{{ lc.feat2_title }}</h3>
+      <p>{{ lc.feat2_desc }}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">{{ lc.feat3_icon }}</div>
+      <h3>{{ lc.feat3_title }}</h3>
+      <p>{{ lc.feat3_desc }}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">{{ lc.feat4_icon }}</div>
+      <h3>{{ lc.feat4_title }}</h3>
+      <p>{{ lc.feat4_desc }}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">{{ lc.feat5_icon }}</div>
+      <h3>{{ lc.feat5_title }}</h3>
+      <p>{{ lc.feat5_desc }}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">{{ lc.feat6_icon }}</div>
+      <h3>{{ lc.feat6_title }}</h3>
+      <p>{{ lc.feat6_desc }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="reveal">
+      <p class="section-label">{{ lc.how_label }}</p>
+      <h2 class="section-title">{{ lc.how_title }}</h2>
+      <p class="section-sub">{{ lc.how_sub }}</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h4>{{ lc.step1_title }}</h4>
+          <p>{{ lc.step1_desc }}</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h4>{{ lc.step2_title }}</h4>
+          <p>{{ lc.step2_desc }}</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h4>{{ lc.step3_title }}</h4>
+          <p>{{ lc.step3_desc }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SENTIMENT -->
+<section class="sentiments">
+  <div class="reveal">
+    <p class="section-label">{{ lc.sent_label }}</p>
+    <h2 class="section-title">{{ lc.sent_title }}</h2>
+    <p class="section-sub">{{ lc.sent_sub }}</p>
+  </div>
+  <div class="sent-grid reveal">
+    <div class="sent-card menfi">
+      <div class="sent-emoji">{{ lc.sent_menfi_emoji }}</div>
+      <h3>{{ lc.sent_menfi_title }}</h3>
+      <p>{{ lc.sent_menfi_desc }}</p>
+    </div>
+    <div class="sent-card musbet">
+      <div class="sent-emoji">{{ lc.sent_musbet_emoji }}</div>
+      <h3>{{ lc.sent_musbet_title }}</h3>
+      <p>{{ lc.sent_musbet_desc }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- CANLI NÜMUNƏ LENTİ -->
+<section class="livesample">
+  <div class="reveal">
+    <p class="section-label">{{ lc.radar_label }}</p>
+    <h2 class="section-title">{{ lc.radar_title }}</h2>
+    <p class="section-sub">{{ lc.radar_sub }}</p>
+  </div>
+  <div class="marquee-wrap reveal">
+    <div class="marquee-track">
+      {% for i in "12" %}
+      <div class="ls-card pos"><div class="ls-badge">🟢</div><div class="ls-body"><span class="ls-tag">Müsbət</span><p>{{ lc.radar1_text }}</p></div></div>
+      <div class="ls-card neg"><div class="ls-badge">🔴</div><div class="ls-body"><span class="ls-tag">Mənfi</span><p>{{ lc.radar2_text }}</p></div></div>
+      <div class="ls-card pos"><div class="ls-badge">🟢</div><div class="ls-body"><span class="ls-tag">Müsbət</span><p>{{ lc.radar3_text }}</p></div></div>
+      <div class="ls-card neg"><div class="ls-badge">🔴</div><div class="ls-body"><span class="ls-tag">Mənfi</span><p>{{ lc.radar4_text }}</p></div></div>
+      <div class="ls-card pos"><div class="ls-badge">🟢</div><div class="ls-body"><span class="ls-tag">Müsbət</span><p>{{ lc.radar5_text }}</p></div></div>
+      <div class="ls-card neg"><div class="ls-badge">🔴</div><div class="ls-body"><span class="ls-tag">Mənfi</span><p>{{ lc.radar6_text }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if lc.show_pricing != "0" %}
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="reveal">
+    <p class="section-label">{{ lc.price_label }}</p>
+    <h2 class="section-title">{{ lc.price_title }}</h2>
+    <p class="section-sub">{{ lc.price_sub }}</p>
+  </div>
+  <div class="pricing-grid reveal">
+
+    <!-- PULSUZ -->
+    <div class="plan-card">
+      <div class="plan-name">{{ lc.plan1_name }}</div>
+      <div class="plan-price"><span class="currency"></span>0<span class="period"> {{ lc.plan_period }}</span></div>
+      <p class="plan-desc">{{ lc.plan1_desc }}</p>
+      <ul class="plan-features">
+        <li>{{ lc.plan1_f1 }}</li>
+        <li>{{ lc.plan1_f2 }}</li>
+        <li>{{ lc.plan1_f3 }}</li>
+        <li>{{ lc.plan1_f4 }}</li>
+        <li class="no">{{ lc.plan1_f5 }}</li>
+        <li class="no">{{ lc.plan1_f6 }}</li>
+        <li class="no">{{ lc.plan1_f7 }}</li>
+      </ul>
+      <a href="#demo" onclick="selectPlan('{{ lc.plan1_name }}')" class="plan-btn outline">{{ lc.plan_btn }}</a>
+    </div>
+
+    <!-- ƏSAS -->
+    <div class="plan-card popular">
+      <span class="popular-badge">⭐ {{ lc.plan_popular }}</span>
+      <div class="plan-name">{{ lc.plan2_name }}</div>
+      <div class="plan-price"><span class="currency">₼</span>299<span class="period"> {{ lc.plan_period }}</span></div>
+      <p class="plan-desc">{{ lc.plan2_desc }}</p>
+      <ul class="plan-features">
+        <li>{{ lc.plan2_f1 }}</li>
+        <li>{{ lc.plan2_f2 }}</li>
+        <li>{{ lc.plan2_f3 }}</li>
+        <li>{{ lc.plan2_f4 }}</li>
+        <li>{{ lc.plan2_f5 }}</li>
+        <li>{{ lc.plan2_f6 }}</li>
+        <li class="no">{{ lc.plan2_f7 }}</li>
+      </ul>
+      <a href="#demo" onclick="selectPlan('{{ lc.plan2_name }}')" class="plan-btn solid">{{ lc.plan_btn }}</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan-card">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price"><span class="currency">₼</span>599<span class="period"> {{ lc.plan_period }}</span></div>
+      <p class="plan-desc">{{ lc.plan3_desc }}</p>
+      <ul class="plan-features">
+        <li>{{ lc.plan3_f1 }}</li>
+        <li>{{ lc.plan3_f2 }}</li>
+        <li>{{ lc.plan3_f3 }}</li>
+        <li>{{ lc.plan3_f4 }}</li>
+        <li>{{ lc.plan3_f5 }}</li>
+        <li>{{ lc.plan3_f6 }}</li>
+        <li>{{ lc.plan3_f7 }}</li>
+      </ul>
+      <a href="#demo" onclick="selectPlan('Pro')" class="plan-btn dark">{{ lc.plan_btn }}</a>
+    </div>
+
+  </div>
+</section>
+{% endif %}
+
+<!-- DEMO FORM -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner reveal">
+    <p class="section-label">{{ lc.demo_label }}</p>
+    <h2 class="section-title">{{ lc.demo_title }}</h2>
+    <p class="section-sub">{{ lc.demo_sub }}</p>
+    <form class="demo-form" id="demoForm">
+      {% csrf_token %}
+      <div id="planBadge" style="display:none; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:8px; padding:10px 14px; font-size:14px; font-weight:600; color:#1d4ed8;">
+        📦 {{ lc.demo_plan_badge }}: <span id="planBadgeText"></span>
+      </div>
+      <input type="hidden" name="plan" id="planInput" value="">
+      <input type="text"  name="name"    placeholder="{{ lc.demo_name }} *" required>
+      <input type="text"  name="company" placeholder="{{ lc.demo_company }} *" required>
+      <input type="text"  name="contact" placeholder="{{ lc.demo_contact }} *" required>
+      <textarea           name="message" placeholder="{{ lc.demo_note }}"></textarea>
+      <p class="demo-error" id="demoError"></p>
+      <button type="submit" class="demo-submit" id="demoBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        {{ lc.demo_title }}
+      </button>
+      <div class="demo-success" id="demoSuccess">
+        ✅ {{ lc.demo_success }}
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="reveal">
+    <p class="section-label">{{ lc.faq_label }}</p>
+    <h2 class="section-title">{{ lc.faq_title }}</h2>
+    <p class="section-sub">{{ lc.faq_sub }}</p>
+  </div>
+  <div class="faq-list reveal">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">{{ lc.faq1_q }}<span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">{{ lc.faq1_a }}</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">{{ lc.faq2_q }}<span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">{{ lc.faq2_a }}</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">{{ lc.faq3_q }}<span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">{{ lc.faq3_a }}</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">{{ lc.faq4_q }}<span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">{{ lc.faq4_a }}</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">{{ lc.faq5_q }}<span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">{{ lc.faq5_a }}</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-inner reveal">
+    <h2>{{ lc.cta_title }}</h2>
+    <p>{{ lc.cta_desc }}</p>
+    <a href="{% url 'login' %}" class="cta-btn">
+      {{ lc.cta_btn }}
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <a href="/" class="footer-logo">Media<span>Pulse</span></a>
+    <p class="footer-copy">{{ lc.footer_text|safe }}</p>
+    <p class="footer-copy">
+      <a href="/privacy/" style="color:#94a3b8;">Məxfilik Siyasəti</a>
+      &nbsp;·&nbsp;
+      <a href="/terms/" style="color:#94a3b8;">İstifadə Şərtləri</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .hero-badge img.emoji { width: 15px; height: 15px; vertical-align: middle; margin-right: 5px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/twemoji@14/dist/twemoji.min.js" crossorigin="anonymous"></script>
+<script>
+  twemoji.parse(document.querySelector('.hero-badge'), { folder: 'svg', ext: '.svg' });
+
+  // Plan seçimi
+  function selectPlan(plan) {
+    document.getElementById('planInput').value = plan;
+    document.getElementById('planBadgeText').textContent = plan;
+    document.getElementById('planBadge').style.display = 'block';
+  }
+
+  // Demo form submit
+  document.getElementById('demoForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('demoBtn');
+    const err = document.getElementById('demoError');
+    const suc = document.getElementById('demoSuccess');
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Göndərilir...';
+    try {
+      const fd = new FormData(this);
+      const res = await fetch("{% url 'demo_request' %}", { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.ok) {
+        this.querySelector('.demo-submit').style.display = 'none';
+        suc.style.display = 'block';
+      } else {
+        err.textContent = data.error || 'Xəta baş verdi';
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Demo istəyin';
+      }
+    } catch(ex) {
+      err.textContent = 'Şəbəkə xətası. Yenidən cəhd edin.';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Demo istəyin';
+    }
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Hero kursor işığı
+  (function() {
+    const hero = document.getElementById('heroSection');
+    const spot = document.getElementById('heroSpotlight');
+    if (!hero || !spot || REDUCED_MOTION) return;
+    hero.addEventListener('mousemove', function(e) {
+      const r = hero.getBoundingClientRect();
+      const mx = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+      const my = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+      spot.style.setProperty('--mx', mx + '%');
+      spot.style.setProperty('--my', my + '%');
+    });
+  })();
+
+  // Statistika sayğacı — "300+", "15 dəq", "24/7" kimi mətnlərdən başlanğıc rəqəmi çıxarıb saymaqla animasiya edir
+  (function() {
+    const nums = document.querySelectorAll('.stat-num');
+    if (!nums.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        io.unobserve(entry.target);
+        const el = entry.target;
+        const raw = (el.dataset.target || el.textContent || '').trim();
+        const m = raw.match(/^(\d+)/);
+        if (!m || REDUCED_MOTION) return; // "AI" kimi ədədsiz dəyərlər olduğu kimi qalır
+        const target = parseInt(m[1], 10);
+        const suffix = raw.slice(m[1].length);
+        const dur = 1100, t0 = performance.now();
+        function tick(t) {
+          const p = Math.min(1, (t - t0) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.4 });
+    nums.forEach(el => io.observe(el));
+  })();
+
+  // Xüsusiyyət kartlarında yüngül 3D tilt effekti
+  (function() {
+    if (REDUCED_MOTION || window.matchMedia('(pointer: coarse)').matches) return;
+    document.querySelectorAll('.feature-card').forEach(function(card) {
+      card.addEventListener('mousemove', function(e) {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = 'perspective(700px) rotateX(' + (-py * 7).toFixed(2) + 'deg) rotateY(' + (px * 7).toFixed(2) + 'deg) translateY(-4px)';
+      });
+      card.addEventListener('mouseleave', function() {
+        card.style.transform = '';
+      });
+    });
+  })();
+
+  // FAQ akkordeon
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el) {
+      el.classList.remove('open');
+      el.querySelector('.faq-a').style.maxHeight = null;
+      el.querySelector('.faq-icon').textContent = '+';
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      const body = item.querySelector('.faq-a');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      item.querySelector('.faq-icon').textContent = '+';
+    }
+  }
+
+  // Naviqasiyada aktiv bölmə (scrollspy)
+  (function() {
+    const links = Array.from(document.querySelectorAll('.nav-link[href^="#"]'));
+    if (!links.length) return;
+    const map = {};
+    links.forEach(function(l) {
+      const id = l.getAttribute('href').slice(1);
+      const sec = document.getElementById(id);
+      if (sec) map[id] = l;
+    });
+    const io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        const link = map[entry.target.id];
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    Object.keys(map).forEach(id => io.observe(document.getElementById(id)));
+  })();
+</script>
+</body>
+</html>

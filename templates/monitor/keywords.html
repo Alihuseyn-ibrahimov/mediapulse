@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Açar sözlər — {{ org.name }}{% endblock %}
+{% block extra_style %}
+.kw-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.kw-table th { background: #1e3a5f; color: white; padding: 10px 14px; text-align: left; }
+.kw-table td { padding: 10px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+.kw-table tr:hover td { background: #f9fafb; }
+.add-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.add-form input { flex: 1; min-width: 160px; padding: 9px 14px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; }
+.add-form input:focus { border-color: #1e3a5f; }
+.add-form button { white-space: nowrap; }
+.alias-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.alias-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #e0f2fe; color: #0369a1; padding: 2px 8px;
+  border-radius: 12px; font-size: 12px;
+}
+.alias-tag button {
+  background: none; border: none; color: #0369a1;
+  cursor: pointer; font-size: 13px; padding: 0; line-height: 1;
+}
+.alias-tag button:hover { color: #ef4444; }
+.alias-add-form { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.alias-add-form input {
+  padding: 4px 10px; border: 1px solid #d1d5db; border-radius: 6px;
+  font-size: 12px; outline: none; flex: 1; min-width: 120px;
+}
+.alias-add-form input:focus { border-color: #1e3a5f; }
+
+/* Mobile: cədvəl yerinə kartlar */
+@media(max-width: 768px) {
+  .kw-table, .kw-table thead, .kw-table tbody, .kw-table th, .kw-table td, .kw-table tr {
+    display: block;
+  }
+  .kw-table thead { display: none; }
+  .kw-table tr {
+    background: white; border-radius: 8px; margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .kw-table td {
+    padding: 6px 0; border-bottom: none;
+  }
+  .kw-table td:first-child { font-size: 16px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; margin-bottom: 6px; }
+}
+{% endblock %}
+{% block content %}
+<div style="margin-bottom:24px;">
+  <h2 style="font-size:22px; font-weight:700; color:#1e3a5f;">🔑 Açar sözlər</h2>
+  <p style="color:#6b7280; font-size:14px; margin-top:2px;">Agent bu sözlərə görə xəbər izləyir. Hər açar söz üçün əlavə axtarış sözləri (alias) əlavə edə bilərsiniz.</p>
+</div>
+
+<div class="card">
+  <form method="post" class="add-form" id="addForm">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="add">
+    <input type="text" name="word" id="wordInput" placeholder="Yeni açar söz daxil edin..." required>
+    <button type="submit" class="btn btn-primary">+ Əlavə et</button>
+    <button type="button" onclick="getSuggestions()" class="btn" style="background:#6366f1;color:white;display:flex;align-items:center;gap:6px;" id="suggestBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 2 12 12"/><path d="m15 2 7 0 0 7"/></svg>
+      AI Tövsiyəsi
+    </button>
+  </form>
+
+  <!-- AI Suggestion Panel -->
+  <div id="suggestPanel" style="display:none;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+    <div style="font-size:13px;font-weight:700;color:#5b21b6;margin-bottom:12px;">✨ AI tövsiyə edir — əlavə etmək istədiklərini seç:</div>
+    <div id="suggestList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    <div id="suggestLoading" style="font-size:13px;color:#7c3aed;">⏳ AI analiz edir...</div>
+  </div>
+
+  {% if keywords %}
+  <table class="kw-table">
+    <thead>
+      <tr>
+        <th style="width:25%">Açar söz</th>
+        <th>Əlavə axtarış sözləri (aliases)</th>
+        <th style="width:10%">Status</th>
+        <th style="width:10%">Növ</th>
+        <th style="width:10%">Əməliyyat</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for kw in keywords %}
+      <tr>
+        <td><strong>{{ kw.word }}</strong></td>
+        <td>
+          <div class="alias-list">
+            {% for alias in kw.aliases.all %}
+            <span class="alias-tag">
+              {{ alias.word }}
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_alias">
+                <input type="hidden" name="alias_id" value="{{ alias.id }}">
+                <button type="submit" title="Sil">×</button>
+              </form>
+            </span>
+            {% empty %}
+            <span style="color:#9ca3af; font-size:12px;">Alias yoxdur</span>
+            {% endfor %}
+          </div>
+          <form method="post" class="alias-add-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_alias">
+            <input type="hidden" name="kw_id" value="{{ kw.id }}">
+            <input type="text" name="alias_word" placeholder="+ Əlavə söz yaz...">
+            <button type="submit" class="btn btn-primary btn-sm">Əlavə et</button>
+          </form>
+        </td>
+        <td>
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="toggle">
+            <input type="hidden" name="kw_id" value="{{ kw.id }}">
+            <button type="submit" class="btn btn-sm {% if kw.is_active %}btn-success{% else %}btn-danger{% endif %}">
+              {% if kw.is_active %}✅ Aktiv{% else %}⏸️ Dayandırılıb{% endif %}
+            </button>
+          </form>
+        </td>
+        <td>
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="toggle_competitor">
+            <input type="hidden" name="kw_id" value="{{ kw.id }}">
+            <button type="submit" class="btn btn-sm" style="{% if kw.is_competitor %}background:#fef3c7;color:#92400e;border:1px solid #fcd34d;{% else %}background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;{% endif %}">
+              {% if kw.is_competitor %}⚔️ Rəqib{% else %}🏢 Öz{% endif %}
+            </button>
+          </form>
+        </td>
+        <td>
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="kw_id" value="{{ kw.id }}">
+            <button type="submit" class="btn btn-danger btn-sm"
+              onclick="return confirm('Silmək istəyirsiniz?')">🗑️ Sil</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color:#9ca3af; text-align:center; padding:30px 0;">Hələ açar söz əlavə edilməyib.</p>
+  {% endif %}
+</div>
+
+<script>
+function getCsrf() {
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+async function getSuggestions() {
+  const panel = document.getElementById('suggestPanel');
+  const list  = document.getElementById('suggestList');
+  const loading = document.getElementById('suggestLoading');
+  const btn   = document.getElementById('suggestBtn');
+
+  panel.style.display = 'block';
+  list.innerHTML = '';
+  loading.style.display = 'block';
+  btn.disabled = true;
+  btn.textContent = '⏳ Analiz edilir...';
+
+  try {
+    const res = await fetch("{% url 'keyword_suggest' %}", {
+      method: 'GET',
+      headers: { 'X-CSRFToken': getCsrf() }
+    });
+    const data = await res.json();
+    loading.style.display = 'none';
+
+    if (data.suggestions && data.suggestions.length) {
+      data.suggestions.forEach(word => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.textContent = '+ ' + word;
+        chip.style.cssText = 'padding:6px 14px;border:1.5px solid #7c3aed;border-radius:20px;background:white;color:#5b21b6;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;';
+        chip.onmouseenter = () => { chip.style.background='#7c3aed'; chip.style.color='white'; };
+        chip.onmouseleave = () => { chip.style.background='white'; chip.style.color='#5b21b6'; };
+        chip.onclick = () => addKeyword(word, chip);
+        list.appendChild(chip);
+      });
+    } else {
+      list.innerHTML = '<span style="font-size:13px;color:#6b7280;">Yeni tövsiyə tapılmadı.</span>';
+    }
+  } catch(e) {
+    loading.textContent = '❌ Xəta baş verdi.';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 2 12 12"/><path d="m15 2 7 0 0 7"/></svg> AI Tövsiyəsi';
+}
+
+async function addKeyword(word, chip) {
+  chip.disabled = true;
+  chip.textContent = '⏳ ' + word;
+
+  const fd = new FormData();
+  fd.append('word', word);
+  fd.append('csrfmiddlewaretoken', getCsrf());
+
+  const res = await fetch("{% url 'keyword_add_ajax' %}", { method: 'POST', body: fd });
+  const data = await res.json();
+
+  if (data.ok) {
+    chip.textContent = '✅ ' + word;
+    chip.style.background = '#dcfce7';
+    chip.style.color = '#166534';
+    chip.style.borderColor = '#86efac';
+    chip.onmouseenter = null;
+    chip.onmouseleave = null;
+    chip.onclick = null;
+  } else {
+    chip.disabled = false;
+    chip.textContent = '+ ' + word;
+  }
+}
+</script>
+{% endblock %}

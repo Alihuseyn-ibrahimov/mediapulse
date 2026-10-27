@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Press-reliz Generatoru — MediaPulse{% endblock %}
+{% block extra_style %}
+.page-header { margin-bottom: 24px; }
+.page-header h2 { font-size: 22px; font-weight: 700; color: #1e3a5f; }
+.page-header p  { color: #6b7280; font-size: 14px; margin-top: 4px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: 13px; font-weight: 600; color: #374151; }
+.form-group input, .form-group select, .form-group textarea {
+  padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; font-family: inherit; background: white; outline: none;
+  transition: border-color .15s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: #1e3a5f;
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+.result-box {
+  background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: 20px; font-size: 14px; line-height: 1.7; color: #1f2937;
+  white-space: pre-wrap; font-family: 'Segoe UI', sans-serif;
+}
+.copy-btn {
+  margin-top: 12px; display: inline-flex; align-items: center; gap: 6px;
+}
+.spinner { display: none; }
+.loading .spinner { display: inline-block; }
+.loading .btn-text { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@media(max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2>📝 Press-reliz Generatoru</h2>
+    <p>AI köməyi ilə peşəkar press-relizlər hazırlayın</p>
+  </div>
+  <button type="button" id="suggestBtn" onclick="autoSuggest()"
+    style="display:flex;align-items:center;gap:7px;background:#6366f1;color:white;border:none;
+           padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+    🤖 AI Avtomatik Mövzu
+  </button>
+</div>
+
+<div id="suggestMsg" style="display:none;background:#ede9fe;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#4c1d95;"></div>
+
+<div class="card">
+  <form method="post" id="prForm" onsubmit="setLoading(true)">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Təşkilat adı</label>
+        <input type="text" name="org_name" id="orgName" placeholder="məs. DSMF, SOCAR, Azərenerji..." required>
+      </div>
+      <div class="form-group">
+        <label>Ton</label>
+        <select name="tone">
+          <option value="rəsmi">Rəsmi</option>
+          <option value="informativ">İnformativ</option>
+          <option value="dinamik">Dinamik</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Mövzu / Başlıq ideyası</label>
+        <input type="text" name="topic" id="topicInput" placeholder="məs. Yeni pensiya islahatları haqqında press-reliz..." required>
+      </div>
+      <div class="form-group full">
+        <label>Ətraflı məlumat</label>
+        <textarea name="details" id="detailsInput" placeholder="Xəbərin detalları, statistikalar, sitatlar, tarixlər..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Dil</label>
+        <select name="lang">
+          <option value="az">Azərbaycan dili</option>
+          <option value="ru">Rus dili</option>
+          <option value="en">İngilis dili</option>
+          <option value="tr">Türk dili</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top:16px;" id="submitBtn">
+      <span class="btn-text">✨ Press-reliz yarat</span>
+      <span class="spinner"><span class="spin">⏳</span> Hazırlanır...</span>
+    </button>
+  </form>
+</div>
+
+{% if result %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <strong style="color:#1e3a5f;">Hazırlanmış press-reliz</strong>
+    <button class="btn btn-success btn-sm copy-btn" onclick="copyResult()">📋 Kopyala</button>
+  </div>
+  <div class="result-box" id="resultText">{{ result }}</div>
+</div>
+{% endif %}
+
+<script>
+function setLoading(v) {
+  document.getElementById('submitBtn').classList.toggle('loading', v);
+}
+function copyResult() {
+  const text = document.getElementById('resultText').innerText;
+  navigator.clipboard.writeText(text).then(() => alert('Kopyalandı!'));
+}
+async function autoSuggest() {
+  const btn = document.getElementById('suggestBtn');
+  const msg = document.getElementById('suggestMsg');
+  btn.textContent = '⏳ Analiz edilir...';
+  btn.disabled = true;
+  msg.style.display = 'none';
+  try {
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    const res = await fetch("{% url 'press_release_suggest' %}", { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.ok && data.topic) {
+      document.getElementById('topicInput').value = data.topic;
+      document.getElementById('detailsInput').value = data.details || '';
+      msg.style.display = 'block';
+      msg.textContent = '✅ Son xəbərlərə əsasən mövzu avtomatik dolduruldu. İstəsəniz redaktə edib press-reliz yarada bilərsiniz.';
+    } else {
+      msg.style.display = 'block';
+      msg.textContent = '⚠️ Son 7 gündə xəbər tapılmadı. Mövzunu əl ilə daxil edin.';
+    }
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.textContent = '❌ Xəta baş verdi.';
+  }
+  btn.textContent = '🤖 AI Avtomatik Mövzu';
+  btn.disabled = false;
+}
+</script>
+{% endblock %}
